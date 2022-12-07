@@ -7,16 +7,27 @@ pub mod sample;
 
 #[cfg(feature = "tdx-verifier")]
 pub mod tdx;
+#[cfg(feature = "snp-verifier")]
+pub mod snp;
 
 pub(crate) fn to_verifier(tee: &Tee) -> Result<Box<dyn Verifier + Send + Sync>> {
     match tee {
-        Tee::Sev | Tee::Sgx | Tee::Snp => todo!(),
+        Tee::Sev | Tee::Sgx => todo!(),
         Tee::Tdx => {
             cfg_if::cfg_if! {
                 if #[cfg(feature = "tdx-verifier")] {
                     Ok(Box::<tdx::Tdx>::default() as Box<dyn Verifier + Send + Sync>)
                 } else {
                     todo!()
+                }
+            }
+        }
+        Tee::Snp => {
+            cfg_if::cfg_if! {
+                if #[cfg(feature = "snp-verifier")] {
+                    Ok(Box::<snp::Snp>::default() as Box<dyn Verifier + Send + Sync>)
+                } else {
+                    bail!("SNP Verifier not enabled.")
                 }
             }
         }
