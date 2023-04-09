@@ -148,7 +148,7 @@ fn verify_cert_chain(cert_chain: &[CertTableEntry]) -> Result<x509::X509> {
         .iter()
         .find(|c| c.cert_type == SnpCertType::VCEK)
         .ok_or_else(|| anyhow!("VCEK not found."))?;
-    let vcek = x509::X509::from_der(raw_vcek.data()).map_err(|_| anyhow!("Failed to load VCEK"))?;
+    let vcek = x509::X509::from_pem(raw_vcek.data()).map_err(|_| anyhow!("Failed to load VCEK"))?;
 
     // ARK -> ARK
     ark.verify(&(ark.public_key().unwrap() as PKey<Public>))
